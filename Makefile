@@ -7,6 +7,10 @@ all:
 
 run:
 	./main
+	java -cp java/src ca.Dyamen.Main out/out.dat
+
+run_alone:
+	./main
 
 edit_cvt:
 	nvim java/src/ca/Dyamen/Main.java

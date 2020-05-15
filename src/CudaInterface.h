@@ -1,17 +1,25 @@
 #ifndef _CUDA_INTERFACE_H_
 #define _CUDA_INTERFACE_H_
 
+#include <cstdint>
+
 class Mandelbrot
 {
 public:
-	Mandelbrot(const int &res, const int &max_itr, const double &dx = 0, const double &dy = 0, const double &zoom = 1) : m_res(res), m_max_itr(max_itr), m_dx(dx), m_dy(dy), m_zoom(zoom) {}
+	Mandelbrot() :m_draw_mode(0) {}
 	~Mandelbrot() {};
 
 public:
+	void init();
 	int* compute() const;
 
-private:
-	int m_res, m_max_itr;
+public:
+	// Draw modes: 
+	// - 0: DEFAULT
+	// - 1: POTENTIAL 
+	uint8_t m_draw_mode;
+	int m_res;
+	int m_max_itr;
 	double m_dx, m_dy, m_zoom;
 };
 
