@@ -1,6 +1,8 @@
 #include<chrono>
 #include<cstdlib>
 #include<stdio.h>
+#include"ttmath.h"
+#include<iostream>
 
 #include"CudaInterface.h"
 

@@ -2,8 +2,10 @@
 #include<vector>
 #include"CudaInterface.h"
 
-#define PIXELS_RES_PER_THREAD 16
 #define THREADS_RES_PER_BLOCK 16
+#define PIXELS_RES_PER_THREAD 16
+#define PIXELS_RES_PER_BLOCK THREADS_RES_PER_BLOCK*PIXELS_RES_PER_THREAD 
+
 
 __device__
 int computePoint(const int &x, const int &y, const double &dx, const double &dy, const double &zoom, const int &res, const int &max_itr)
@@ -30,22 +32,24 @@ break_loop: {}
 __global__
 void computeSet(int *scalar_field, int res, int max_itr, double dx, double dy, double zoom)
 {
-	const int xPos = PIXELS_RES_PER_THREAD * (blockIdx.x*gridDim.x + threadIdx.x);
-	const int yPos = PIXELS_RES_PER_THREAD * (blockIdx.y*gridDim.y + threadIdx.y);
-	if(xPos >= res || yPos >= res) return;
+	const int xPos = PIXELS_RES_PER_BLOCK*blockIdx.x + PIXELS_RES_PER_THREAD*threadIdx.x;
+	const int yPos = PIXELS_RES_PER_BLOCK*blockIdx.y + PIXELS_RES_PER_THREAD*threadIdx.y;
 
-	int ptr = yPos*res + xPos;
+	if(xPos >= res || yPos >= res) return;
 	
-	for(int y = 0; y < res; ++y)
+	int ptr = yPos*res + xPos;
+	//printf("BlockId: %3d %3d, ThreadId: %3d %3d, Pos: %6d %6d, Ptr: %10d\n", blockIdx.x, blockIdx.y, threadIdx.x, threadIdx.y, xPos, yPos, ptr);
+
+	for(int y = yPos; y < yPos+PIXELS_RES_PER_THREAD; ++y)
 	{
-		if(yPos + y >= res) goto b;
-		for(int x = 0; x < res; ++x, ++ptr)
+		if(y >= res) goto b;
+		for(int x = xPos; x < xPos+PIXELS_RES_PER_THREAD; ++x, ++ptr)
 		{
-			if(xPos + x >= res) goto a;
+			if(x >= res) { ptr += xPos; goto a; }
 			*(scalar_field+ptr) = computePoint(x, y, dx, dy, zoom, res, max_itr);
 		}
+   		ptr += res - PIXELS_RES_PER_THREAD;
 a: {}
-   		ptr += xPos;
 	}
 b: {}
 }
@@ -149,7 +153,7 @@ void Mandelbrot::init()
 int* Mandelbrot::compute() const
 {
 	// Compute number of blocks and threads per block
-	const int block_res = ceil(double(m_res) / double(PIXELS_RES_PER_THREAD) / double(THREADS_RES_PER_BLOCK));
+	const int block_res = ceil(double(m_res) / double(PIXELS_RES_PER_THREAD * THREADS_RES_PER_BLOCK));
 	dim3 blocks(block_res, block_res, 1);
 	dim3 threads(PIXELS_RES_PER_THREAD, PIXELS_RES_PER_THREAD, 1);
 
