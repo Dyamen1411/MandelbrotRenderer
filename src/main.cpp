@@ -12,7 +12,12 @@ using namespace std::chrono;
 void write(int *scalar_field, const Mandelbrot &m)
 {
 	FILE *fptr;
-	fptr = fopen("out/out.dat", "w");
+	fptr = fopen("out.dat", "w");
+	if (fptr == NULL)
+	{
+		dprintf(2, "Could not open output file.\n");
+		return ;
+	}
 	
 	fwrite(&m.m_draw_mode, sizeof(uint8_t), 1, fptr);
 	fwrite(&m.m_max_itr, sizeof(int), 1, fptr);
@@ -30,7 +35,7 @@ int main(int argc, char **argv)
 	uint64_t start = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 	int *scalar_field = m.compute();
 	uint64_t end = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
-	printf("---> Render took %10d ms\n", (end - start));
+	printf("---> Render took %10lu ms\n", (end - start));
 
 	write(scalar_field, m);	
 

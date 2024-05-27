@@ -74,12 +74,12 @@ public class Main
 
 	private static final void writeImage(BufferedImage image) throws IOException
 	{
-		ImageIO.write(image, "PNG", new File("out/output.png"));
+		ImageIO.write(image, "PNG", new File("output.png"));
 	}
 
 	public static void main(String... args) throws IOException
 	{
-		File fdata = new File(args[0]);
+		File fdata = new File("out.dat");
 		final byte[] data = Files.readAllBytes(fdata.toPath());
 		
 		int mode = getByteFromPointer(data, 0);

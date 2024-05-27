@@ -54,7 +54,7 @@ a: {}
 b: {}
 }
 
-int compareStr(char *a, char *b, int l)
+int compareStr(const char *a, const char *b, int l)
 {
 	for(int i = 0; i < l; ++i) if(*(a+i) == '\0' || *(b+i) == '\0' || *(a+i) != *(b+i)) return 0;
 	return 1;
@@ -69,7 +69,7 @@ void mandelbrotSettings(std::vector<char*>::iterator &it, const std::vector<char
 		if(**it=='[' || **it=='\0') goto mdlse;
 
 			if(compareStr(*it, "dx", 2)) { dx = atof(*it+3); printf("\tdx = %f\n", dx); }
-		else 	if(compareStr(*it, "dy", 2)) { dy = atof(*it+3); printf("\tdy = %f\n", dy); }
+		else	if(compareStr(*it, "dy", 2)) { dy = atof(*it+3); printf("\tdy = %f\n", dy); }
 		else	if(compareStr(*it, "res", 3)) { res = atoi(*it+4); printf("\tres = %d\n", res); }
 		else	if(compareStr(*it, "max_itr", 7)) { max_itr = atoi(*it+8); printf("\tmax_itr = %d\n", max_itr); }
 		else	if(compareStr(*it, "zoom", 4)) { zoom = atof(*it+5); printf("\tzoom = %f\n", zoom); }
